@@ -2,28 +2,51 @@
 
 Standards Desk MCP server. Three tools: pillar discovery, rubric fetch, and static checker. The calling agent does LLM reasoning client-side using the rubrics; Workato handles the mechanical checks.
 
+## MCP server prompt (injected at registration)
+
+> Before running any checks, ask the user which role best describes them:
+> - **Training** — workshop trainers, World of Workato, ILT
+> - **Education** — Workato Academy, async e-learning, ETT
+> - **Workato** — all other Workato employees
+>
+> Use their answer as the `audience` parameter on all tool calls. If they've already told you their role in this session, don't ask again.
+
 ## Tools
 
-### 1. `list_pillars()`
-Returns metadata for all available pillars — names, descriptions, what each checks for. Lightweight discovery. No artifact needed.
+### 1. `list_pillars(audience?: string)`
+Returns metadata for all available pillars — names, descriptions, what each checks for. Pass `audience` to see which variants apply. Lightweight discovery, no artifact needed.
 
 ```
-list_pillars() → [{ name, description, checks_for }]
+list_pillars(audience?: "training"|"education"|"workato")
+→ [{ name, description, checks_for, has_variant: bool }]
 ```
 
-### 2. `get_rubrics(pillars?: string[])`
-Returns full rubric markdown for each requested pillar. Omit `pillars` to get all six. The calling agent uses these to reason about the artifact client-side.
+### 2. `get_rubrics(pillars?: string[], audience?: string)`
+Returns full rubric markdown for each requested pillar, scoped to the audience variant. Omit `pillars` to get all. The calling agent uses these for client-side LLM reasoning.
 
 ```
-get_rubrics(pillars?: string[]) → { pillar: rubric_markdown }
+get_rubrics(pillars?: string[], audience?: "training"|"education"|"workato")
+→ { pillar: rubric_markdown }
 ```
 
-### 3. `run_static_checks(artifact: string, pillars?: string[])`
-Runs mechanical static checks (banned phrases, regex patterns, structural rules) for the requested pillars. Returns findings only — no rubric. Omit `pillars` to run all.
+### 3. `run_static_checks(artifact: string, pillars?: string[], audience?: string)`
+Runs mechanical static checks for the requested pillars using the audience-appropriate rule set. Omit `pillars` to run all applicable pillars for that audience.
 
 ```
-run_static_checks(artifact: string, pillars?: string[]) → { pillar: { findings: finding[], pass: bool } }
+run_static_checks(artifact: string, pillars?: string[], audience?: "training"|"education"|"workato")
+→ { pillar: { findings: finding[], pass: bool } }
 ```
+
+### Audience variants per pillar
+
+| Pillar | training | education | workato |
+|---|---|---|---|
+| `say-it-plain` | Full rules + training carve-outs | Full rules + ETT carve-outs | Stripped (no internal carve-outs) |
+| `fact-check` | Workshop focus (GA dates, FDE cookbooks, WoW delivery) | Course focus (Rise 360, async) | Not applicable |
+| `calibrate-challenge` | ILT / workshop calibration | e-learning calibration | Not applicable |
+| `team-style-guide` | Training team conventions | ETT conventions | Not applicable |
+| `stick-check` | Universal | Universal | Universal |
+| `delight-check` | Universal | Universal | Universal |
 
 ### Available pillars
 
@@ -39,10 +62,11 @@ run_static_checks(artifact: string, pillars?: string[]) → { pillar: { findings
 ## Typical agent flow
 
 ```
-1. list_pillars()                              → discover what's available
-2. get_rubrics(["say-it-plain", "fact-check"]) → fetch rubrics for selected pillars
-3. run_static_checks(artifact, [...])          → get mechanical findings
-4. Agent reasons client-side using rubrics + findings → synthesis
+1. Ask user for role → "training" | "education" | "workato"
+2. list_pillars(audience)                                    → discover applicable pillars
+3. get_rubrics(["say-it-plain", "fact-check"], audience)    → fetch audience-scoped rubrics
+4. run_static_checks(artifact, [...], audience)             → audience-appropriate findings
+5. Agent reasons client-side using rubrics + findings       → synthesis
 ```
 
 ## Recipe architecture
