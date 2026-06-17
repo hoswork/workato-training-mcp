@@ -8,6 +8,7 @@ Workato training team MCP servers — a collection of AI tools built on the Work
 |---|---|
 | [qr-code](qr-code/) | Generates Workato-branded QR codes as base64 PNG |
 | [kahoot-generator](kahoot-generator/) | Generates Kahoot-importable CSV quizzes from learning artifacts |
+| [standards-desk](standards-desk/) | Standards Desk static pillar checks + rubric delivery (`list_pillars`, `get_rubrics`, `run_static_checks`) |
 
 ## Architecture
 

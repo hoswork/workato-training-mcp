@@ -8,6 +8,7 @@ Monorepo for Workato training team MCP servers. Each subdirectory is a self-cont
 |---|---|---|
 | `qr-code/` | Workato-branded QR code generator | Generates PNG QR codes via Python snippet |
 | `kahoot-generator/` | Kahoot quiz generator | Generates Kahoot-importable CSV from any learning artifact |
+| `standards-desk/` | Standards Desk static checker | `list_pillars` · `get_rubrics` · `run_static_checks` |
 
 ## Shared infrastructure patterns
 
