@@ -4,12 +4,16 @@ Standards Desk MCP server. Three tools: pillar discovery, rubric fetch, and stat
 
 ## MCP server prompt (injected at registration)
 
-> Before running any checks, ask the user which role best describes them:
-> - **Training** — workshop trainers, World of Workato, ILT
-> - **Education** — Workato Academy, async e-learning, ETT
-> - **Workato** — all other Workato employees
+> **Before running any checks:**
 >
-> Use their answer as the `audience` parameter on all tool calls. If they've already told you their role in this session, don't ask again.
+> 1. Check memory for a saved `standards_desk_audience` value. If found, use it silently — do not ask again.
+> 2. If not in memory, ask once:
+>    > "Which role best describes you? (I'll remember this for future sessions)"
+>    > - **Training** — workshop trainers, World of Workato, ILT
+>    > - **Education** — Workato Academy, async e-learning, ETT
+>    > - **Workato** — all other Workato employees (default)
+> 3. Save the answer to memory as `standards_desk_audience` so it persists across sessions.
+> 4. Use the value as the `audience` parameter on all tool calls. **Default is `workato` if unspecified or unknown.**
 
 ## Tools
 
@@ -17,7 +21,7 @@ Standards Desk MCP server. Three tools: pillar discovery, rubric fetch, and stat
 Returns metadata for all available pillars — names, descriptions, what each checks for. Pass `audience` to see which variants apply. Lightweight discovery, no artifact needed.
 
 ```
-list_pillars(audience?: "training"|"education"|"workato")
+list_pillars(audience?: "training"|"education"|"workato"  // default: "workato")
 → [{ name, description, checks_for, has_variant: bool }]
 ```
 
@@ -25,7 +29,7 @@ list_pillars(audience?: "training"|"education"|"workato")
 Returns full rubric markdown for each requested pillar, scoped to the audience variant. Omit `pillars` to get all. The calling agent uses these for client-side LLM reasoning.
 
 ```
-get_rubrics(pillars?: string[], audience?: "training"|"education"|"workato")
+get_rubrics(pillars?: string[], audience?: "training"|"education"|"workato"  // default: "workato")
 → { pillar: rubric_markdown }
 ```
 
@@ -33,7 +37,7 @@ get_rubrics(pillars?: string[], audience?: "training"|"education"|"workato")
 Runs mechanical static checks for the requested pillars using the audience-appropriate rule set. Omit `pillars` to run all applicable pillars for that audience.
 
 ```
-run_static_checks(artifact: string, pillars?: string[], audience?: "training"|"education"|"workato")
+run_static_checks(artifact: string, pillars?: string[], audience?: "training"|"education"|"workato"  // default: "workato")
 → { pillar: { findings: finding[], pass: bool } }
 ```
 
