@@ -1,12 +1,12 @@
 {
   "name": "workato-qr-mcp",
-  "description": "QR code generator — accepts a URL and optional color, returns a base64 PNG",
+  "description": "Workato-branded QR code generator. Creates QR codes with the Workato W logo, customizable foreground and background colors. Returns base64-encoded PNG via MCP tool generate_qr_code.",
   "auth_type": "token",
   "tools_type": "project_assets",
   "tools": [
     {
       "tool": "ref_0",
-      "description": "",
+      "description": "Generate a Workato-branded QR code as a base64 PNG. The QR code uses EC level H (30% error correction) with the Workato W logo centered. fg_color controls both the QR module color and the logo color. Presets: workato (#108291 teal), dark, black, white, or any hex string (#rrggbb). bg_color presets: white, transparent, or any hex string. Returns: { image_base64, mime_type, width, height, url }.",
       "vua_required": false
     }
   ],

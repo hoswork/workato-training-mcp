@@ -1,6 +1,6 @@
 {
   "name": "generate_qr_code",
-  "trigger_description": "",
+  "trigger_description": "Generate a Workato-branded QR code as a base64-encoded PNG. The QR code is rendered with the Workato W logo centered, using the specified foreground color for both the QR modules and the logo. Inputs: url (required) — the URL to encode; fg_color (optional, default 'workato') — foreground color as a named preset (workato, dark, black, white) or hex string like #ff6600; bg_color (optional, default 'white') — background color as a named preset or hex string, use 'transparent' for PNG with alpha channel. Returns image_base64 (PNG), mime_type, width, height, url.",
   "references": {
     "recipe_id": {
       "type": "recipe",

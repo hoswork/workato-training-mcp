@@ -1,6 +1,6 @@
 {
   "name": "generate_qr_code",
-  "version": 3,
+  "version": 4,
   "private": false,
   "concurrency": 1,
   "code": {
@@ -14,8 +14,8 @@
     "unfinished": false,
     "input": {
       "requires_user_confirmation": "false",
-      "parameters_schema_json": "[{\"name\": \"url\", \"type\": \"string\", \"label\": \"URL to encode\", \"control_type\": \"url\", \"optional\": false}, {\"name\": \"color\", \"type\": \"string\", \"label\": \"Foreground color (hex, e.g. 000000)\", \"control_type\": \"text\", \"optional\": true}]",
-      "result_schema_json": "[{\"name\": \"image_base64\", \"type\": \"string\", \"label\": \"PNG image (base64)\", \"control_type\": \"text\"}, {\"name\": \"mime_type\", \"type\": \"string\", \"label\": \"MIME type\", \"control_type\": \"text\"}, {\"name\": \"width\", \"type\": \"integer\", \"label\": \"Width (px)\", \"control_type\": \"number\", \"parse_output\": \"integer_conversion\"}, {\"name\": \"height\", \"type\": \"integer\", \"label\": \"Height (px)\", \"control_type\": \"number\", \"parse_output\": \"integer_conversion\"}, {\"name\": \"url\", \"type\": \"string\", \"label\": \"Input URL\", \"control_type\": \"text\"}]"
+      "parameters_schema_json": "[{\"name\": \"url\", \"type\": \"string\", \"label\": \"URL\", \"control_type\": \"url\", \"optional\": false, \"hint\": \"The URL to encode in the QR code\"}, {\"name\": \"fg_color\", \"type\": \"string\", \"label\": \"Foreground color\", \"control_type\": \"text\", \"optional\": true, \"hint\": \"Color of QR modules and logo. Named presets: workato (#108291), dark, black, white. Or any hex value like #ff6600. Default: workato\"}, {\"name\": \"bg_color\", \"type\": \"string\", \"label\": \"Background color\", \"control_type\": \"text\", \"optional\": true, \"hint\": \"Background color. Presets: white, transparent. Or any hex value. Default: white\"}]",
+      "result_schema_json": "[{\"name\": \"image_base64\", \"type\": \"string\", \"label\": \"PNG image (base64-encoded)\", \"control_type\": \"text\"}, {\"name\": \"mime_type\", \"type\": \"string\", \"label\": \"MIME type\", \"control_type\": \"text\"}, {\"name\": \"width\", \"type\": \"integer\", \"label\": \"Image width (px)\", \"control_type\": \"number\", \"parse_output\": \"integer_conversion\"}, {\"name\": \"height\", \"type\": \"integer\", \"label\": \"Image height (px)\", \"control_type\": \"number\", \"parse_output\": \"integer_conversion\"}, {\"name\": \"url\", \"type\": \"string\", \"label\": \"Input URL\", \"control_type\": \"text\"}]"
     },
     "extended_input_schema": [
 
