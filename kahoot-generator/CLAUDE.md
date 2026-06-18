@@ -136,15 +136,15 @@ def main(input):
 | Resource | Value |
 |---|---|
 | Workspace | id `2100000234` (trial) |
-| Project | `workato-qr` id `28820`, folder `42011` |
-| Recipe: get_kahoot_constraints | id `277619` |
-| Skill: get_kahoot_constraints | `skl-AaXspNnE-9FW8bP-AB` |
-| Recipe: format_kahoot | id `277620` |
-| Skill: format_kahoot | `skl-AaXspPNo-wTNR3h-AB` |
-| MCP server | `mcps-AaXt8Hzr-J8H-AB` |
-| MCP URL | `https://2601.apim.mcp.trial.workato.com` |
+| Project | `kahoot-generator` id `28996`, folder `42255` |
+| Recipe: get_kahoot_constraints | id `277651` |
+| Skill: get_kahoot_constraints | `skl-AaXwnGax-oKGFCQ-AB` |
+| Recipe: format_kahoot | id `277650` |
+| Skill: format_kahoot | `skl-AaXwnGak-boNBtz-AB` |
+| MCP server | `mcps-AaXwoACL-bxT-AB` |
+| MCP URL | `https://2604.apim.mcp.trial.workato.com` |
 
-**Note:** Not yet BT-managed — trial workspace only. BT path TBD.
+**Note:** Own isolated project — push here does not affect qr-code or standards-desk. Not yet BT-managed — trial workspace only.
 
 ## Key lesson: extended_input_schema on workflow_return_result
 
