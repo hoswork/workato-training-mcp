@@ -24,7 +24,7 @@ PHASES = {
         {"phase":"phase-6","conversation":4,"label":"Abstract","type":"step"},
         {"phase":"phase-7","conversation":4,"label":"Verification Gates","type":"step"},
     ],
-    "brief-me": [
+    "the-brief": [
         {
                 "phase": "step-1",
                 "conversation": None,

@@ -1,5 +1,5 @@
 ---
-name: brief-me
+name: the-brief
 description: Use when a trainer asks to be briefed on a customer training engagement — "brief me on [account]", "trainer summary for [account]", "prep me for [account] training". Generates a concise 1–2 page Trainer Summary from Jira (ETT ticket → Drive training proposal), Enterprise Data (Snowflake footprint), Gong, Gmail, Slack (#int_ channel + CSM), and web. Outputs Markdown first (source of truth); card-based Google-Docs-pasteable HTML only on request. Workato-internal, trainer audience only.
 metadata:
   version: "2.0"
@@ -18,7 +18,7 @@ Project Instructions template:
 Engagement: [Account] — [Course], [Date]
 ETT ticket: [link]
 Drive folder: [link]
-brief-me skill active. Read the working folder for any prior briefing before starting a new pass.
+the-brief skill active. Read the working folder for any prior briefing before starting a new pass.
 ```
 
 ## MCP prerequisites
@@ -93,7 +93,7 @@ Save to the working folder and present the Markdown (plus HTML if requested).
 
 ## Logging
 
-At completion, invoke: `skill-logger brief-me` (if available; skip silently if not).
+At completion, invoke: `skill-logger the-brief` (if available; skip silently if not).
 
 ## Tape
 

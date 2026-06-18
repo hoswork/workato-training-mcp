@@ -22,7 +22,7 @@ SKILL_CONTEXTS = {
         "quality_gates": "the-once-over invoked in gate mode after each conversation. Single pillar fail = block. Iterate until clean before writing output file and closing conversation.",
         "resume_pattern": "Say 'resume'. Claude reads log.md CURRENT STATE and picks up without re-explanation."
     },
-    "brief-me": {
+    "the-brief": {
     "description": "1-2 page Trainer Summary for a named customer training engagement.",
     "surface": "Claude Desktop Cowork or Chat \u2014 requires a Claude Desktop Project per engagement.",
     "project_instructions": "Engagement: [Account] \u2014 [Course], [Date]\nETT ticket: [link]\nDrive folder: [link]\nbrief-me skill active.",
