@@ -2,7 +2,7 @@
 name: wow-plan
 description: Use when planning a 1-day workshop course (especially a World of Workato session) — produces a course abstract (≤150 words, marketing-shaped) and a detailed outline (modules → labs/sessions → learning objectives → time allocations → narrative arc). Uses Amazon-style Working Backwards (press release first). Composes the Standards Desk pillars (`fact-check`, `calibrate-challenge`, `delight-check`, `stick-check`, `say-it-plain`, `team-style-guide`, `complete-check`) and invokes `the-once-over` at Phase 7 for verification. Renamed from `chart-the-course` 2026-06-03. For async self-paced e-learning, use `addie-plan` instead.
 metadata:
-  version: "1.4"
+  version: "1.5"
 ---
 
 # wow-plan
@@ -531,9 +531,13 @@ verify what ran and why.
 Half day · AM · Instructor-led lab
 ```
 
-### Phase 7 — Verification gates (run `the-once-over`)
+### Phase 7 — Verification gates (run `the-once-over` in gate mode)
 
-Before declaring the course plan ready, invoke **`the-once-over`** (the Standards Desk evaluator). It routes the plan through every pillar and returns a verdict + recommendations. The table below summarizes what each pillar gate checks; pillar skills hold the actual rubrics — `the-once-over` runs them.
+Before declaring the course plan ready, invoke **`the-once-over`** in **gate mode** — this is a workflow gate, not an advisory review. Signal gate mode by telling the-once-over: "this is a Phase 7 gate invoked by wow-plan workflow."
+
+**Gate mode behavior:** single pillar fail = overall fail, course plan blocked. The skill returns a verdict + Coach recommendations. Take the recommendations, fix the plan in this conversation, re-run the gate. Iterate until all pillars pass. Do not write the completed `plan.md` or close the conversation until the gate is clean.
+
+The table below summarizes what each pillar gate checks; pillar skills hold the actual rubrics — `the-once-over` runs them.
 
 | Pillar | Check |
 |---|---|
@@ -722,7 +726,7 @@ Before touching course structure, search Confluence for every relevant product f
 
 1. **Abstract (Phase 6)** — write the ≤150-word abstract. Apply `say-it-plain` form + word passes. Run crispness pass: can it be 20% shorter without losing a concrete outcome?
 2. **Global continuity pass** — scenario thread, naming consistency, time totals, feature dependency consolidation, one-callout principle (proposal mode). Run BEFORE pillar checks.
-3. **Pillar gates (Phase 7)** via `the-once-over` — gates, not commentary. Fix failures before proceeding; don't flag and move on.
+3. **Pillar gates (Phase 7)** via `the-once-over` in **gate mode** — single fail blocks the plan. Fix and re-run in this conversation until clean; don't flag and move on.
 4. Write completed `plan.md`. Append gate results to `log.md`, update CURRENT STATE to `phase: Complete`.
 
 > **→ Done.** Surface open questions (planning mode only). The course plan + trainer briefing are ready for lab authoring.
