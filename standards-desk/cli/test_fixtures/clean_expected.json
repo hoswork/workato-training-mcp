@@ -1,0 +1,5 @@
+{
+  "say-it-plain": {"pass": true, "max_findings": 0},
+  "stick-check": {"audience_training": {"pass": true}},
+  "calibrate-challenge": {"audience_training": {"pass": true}}
+}

@@ -1,0 +1,11 @@
+{
+  "say-it-plain": {
+    "pass": false,
+    "min_findings": 5,
+    "must_match": ["revolutionary", "empower", "enterprise-grade", "honestly", "act now"]
+  },
+  "team-style-guide": {
+    "audience_training": {"pass": false, "must_match": ["pedagogy", "KC"]},
+    "audience_workato": {"pass": true}
+  }
+}

@@ -1,0 +1,2 @@
+Workato connects your apps using recipes. Each recipe has a trigger and one or more actions.
+You will know this worked when the job completes in 30 seconds (validated).
