@@ -5,7 +5,7 @@ No static checks — all 7 delight principles require LLM reasoning.
 The rubric is returned for client-side reasoning only.
 """
 
-RUBRIC = """\
+RUBRIC = ""
 ---
 name: delight-check
 description: Use when designing or reviewing training/enablement content (labs, decks, courses, exercises, games) to check that it's delightful — fun and personality designed into the core experience, not bolted on; play that makes exploration safe for skeptical experts; the one felt win that turns a skeptic curious. Frame the pillar of Delight under The Standards Desk. Delight is the amplifier on top of the useful floor that `calibrate-challenge` owns.

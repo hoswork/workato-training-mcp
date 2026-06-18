@@ -1,0 +1,209 @@
+{
+  "name": "run_static_checks",
+  "version": 1,
+  "private": false,
+  "concurrency": 1,
+  "code": {
+    "as": "start_workflow_run_",
+    "number": 0,
+    "keyword": "trigger",
+    "provider": "workato_skill",
+    "name": "start_workflow",
+    "skip": false,
+    "uuid": "run_static_checks-trig",
+    "input": {
+      "requires_user_confirmation": "false",
+      "description": "Runs mechanical static checks. Returns results_json.",
+      "parameters_schema_json": "[{\"name\": \"artifact\", \"type\": \"string\", \"label\": \"Artifact\", \"control_type\": \"text\", \"optional\": false}, {\"name\": \"pillars_json\", \"type\": \"string\", \"label\": \"Pillars JSON\", \"control_type\": \"text\", \"optional\": true}, {\"name\": \"audience\", \"type\": \"string\", \"label\": \"Audience\", \"control_type\": \"text\", \"optional\": true}]",
+      "result_schema_json": "[{\"name\": \"results_json\", \"type\": \"string\", \"label\": \"Results JSON\", \"control_type\": \"text\"}]"
+    },
+    "extended_input_schema": [],
+    "extended_output_schema": [
+      {
+        "label": "Parameters",
+        "type": "object",
+        "name": "parameters",
+        "extends_schema": false,
+        "properties": [
+          {
+            "control_type": "text",
+            "label": "Artifact",
+            "type": "string",
+            "name": "artifact",
+            "extends_schema": false
+          },
+          {
+            "control_type": "text",
+            "label": "Pillars JSON",
+            "type": "string",
+            "name": "pillars_json",
+            "extends_schema": false
+          },
+          {
+            "control_type": "text",
+            "label": "Audience",
+            "type": "string",
+            "name": "audience",
+            "extends_schema": false
+          }
+        ]
+      }
+    ],
+    "block": [
+      {
+        "as": "py_run__01",
+        "number": 1,
+        "keyword": "action",
+        "provider": "py_eval",
+        "name": "invoke_custom_py_code",
+        "skip": false,
+        "uuid": "run_static_checks-py",
+        "input": {
+          "name": "run_static_checks",
+          "code": "import re\nimport json\n\n\ndef _check(artifact, rules):\n    if not rules.get(\"applicable\", True):\n        return {\"findings\": [], \"pass\": True, \"note\": rules.get(\"note\", \"\")}\n    findings = []\n    for phrase in rules.get(\"banned_phrases\", []):\n        if phrase.lower() in artifact.lower():\n            findings.append({\"type\": \"banned_phrase\", \"match\": phrase, \"message\": \"Remove or rephrase: '{}'\".format(phrase)})\n    for pat in rules.get(\"regex_patterns\", []):\n        flags = re.IGNORECASE if pat.get(\"ignore_case\", True) else 0\n        try:\n            for m in re.finditer(pat[\"pattern\"], artifact, flags):\n                findings.append({\"type\": \"pattern\", \"match\": m.group(), \"message\": pat.get(\"message\", \"Pattern flagged\")})\n        except re.error:\n            pass\n    for check in rules.get(\"presence_checks\", []):\n        pattern = check.get(\"pattern\", \"\")\n        if pattern and not re.search(pattern, artifact, re.IGNORECASE | re.DOTALL):\n            findings.append({\"type\": \"missing\", \"match\": \"\", \"message\": check.get(\"message\", \"Required element missing\")})\n    exclamation_max = rules.get(\"exclamation_max\")\n    if exclamation_max is not None:\n        count = artifact.count(\"!\")\n        if count > exclamation_max:\n            findings.append({\"type\": \"count\", \"match\": \"{} exclamation marks\".format(count), \"message\": \"Max {} allowed, found {}\".format(exclamation_max, count)})\n    return {\"findings\": findings, \"pass\": len(findings) == 0}\n\n\n_SIP_BANNED = [\n    \"leverage\",\"utilize\",\"synergy\",\"paradigm\",\"best-in-class\",\"circle back\",\"deep dive\",\n    \"game-changer\",\"game changer\",\"disruptive\",\"revolutionary\",\"10x\",\"crush it\",\"killing it\",\n    \"rockstar\",\"ninja\",\"guru\",\"hack\",\"unlock\",\"supercharge\",\"turbocharge\",\"skyrocket\",\n    \"empower\",\"democratize\",\"seamless\",\"frictionless\",\"robust\",\"scalable\",\"world-class\",\n    \"cutting-edge\",\"next-gen\",\"enterprise-grade\",\"very\",\"really\",\"just\",\"basically\",\n    \"actually\",\"simply\",\"obviously\",\"clearly\",\"best\",\"fastest\",\"easiest\",\"most powerful\",\n    \"incredible\",\"amazing\",\"awesome\",\"insane\",\"unbelievable\",\"mind-blowing\",\"stunning\",\n    \"killer\",\"epic\",\"legendary\",\"ultimate\",\"perfect\",\"unmatched\",\"unparalleled\",\"unprecedented\",\n    \"act now\",\"don't miss\",\"limited time\",\"before it's too late\",\"you can't afford\",\n    \"what are you waiting for\",\"you need this\",\"you won't believe\",\"you'll love\",\"you deserve\",\n    \"imagine if you\",\"honestly\",\"to be honest\",\"frankly\",\"act autonomously\",\"reason over\",\n    \"reason about\",\"understands\",\"learns on its own\",\"thinks for itself\",\"decides for itself\",\n]\n_SIP_REGEX = [\n    {\"pattern\": r\"\\b(the only|the first|the fastest|the most|no one else|nothing else|unlike anything)\\b\", \"message\": \"Unsubstantiated absolute\", \"ignore_case\": True},\n    {\"pattern\": r\"\\b(was|were|is|are|been)\\s+\\w+ed\\b\", \"message\": \"Passive voice (soft check)\", \"ignore_case\": True},\n]\n\ndef _sip_rules(audience):\n    banned = [p for p in _SIP_BANNED if not (audience in (\"training\",\"education\") and p == \"magic\")]\n    return {\"applicable\": True, \"banned_phrases\": banned, \"regex_patterns\": _SIP_REGEX, \"exclamation_max\": 1}\n\n\n_FC_SPELLING = [\n    {\"pattern\": r\"\\bdata pill\\b|\\bdata-pill\\b\", \"message\": \"Use 'Datapill' (one word)\", \"ignore_case\": True},\n    {\"pattern\": r\"\\bdata tree\\b|\\bdata-tree\\b\", \"message\": \"Use 'Datatree' (one word)\", \"ignore_case\": True},\n    {\"pattern\": r\"\\bKnowledge Check(?!s)\\b\", \"message\": \"Use 'Knowledge Checks' (plural)\", \"ignore_case\": True},\n]\n\ndef _fc_rules(audience):\n    if audience == \"workato\":\n        return {\"applicable\": False, \"note\": \"fact-check: training/education only\", \"banned_phrases\": [], \"regex_patterns\": []}\n    presence = [{\"pattern\": r\"feature_ga_dependency\", \"message\": \"Missing feature_ga_dependency field\"}] if audience == \"training\" else [{\"pattern\": r\"verified.on\", \"message\": \"Missing verified-on date on screenshots\"}]\n    return {\"applicable\": True, \"banned_phrases\": [], \"regex_patterns\": _FC_SPELLING, \"presence_checks\": presence}\n\n\ndef _sc_rules(audience):\n    presence = [{\"pattern\": r\"you.ll know this worked when|you will know this worked when\", \"message\": \"Missing verifier sentence\"}] if audience in (\"training\",\"education\") else []\n    return {\"applicable\": True, \"banned_phrases\": [], \"regex_patterns\": [], \"presence_checks\": presence}\n\n\ndef _cc_rules(audience):\n    if audience == \"workato\":\n        return {\"applicable\": False, \"note\": \"calibrate-challenge: training/education only\", \"banned_phrases\": [], \"regex_patterns\": []}\n    presence = [\n        {\"pattern\": r\"\\d+\\s*(minutes?|seconds?)\\s*\\((validated|provisional)\\)\", \"message\": \"Missing time estimate\"},\n        {\"pattern\": r\"you.ll know this worked when|you will know this worked when\", \"message\": \"Missing verifier sentence\"},\n    ] if audience == \"training\" else [{\"pattern\": r\"\\d+\\s*(minutes?|seconds?)\\s*\\((validated|provisional)\\)\", \"message\": \"Missing time estimate\"}]\n    return {\"applicable\": True, \"banned_phrases\": [], \"regex_patterns\": [], \"presence_checks\": presence}\n\n\ndef _dc_rules(audience):\n    return {\"applicable\": True, \"banned_phrases\": [], \"regex_patterns\": [], \"note\": \"delight-check: no mechanical checks, LLM reasoning only\"}\n\n\n_TSG_BANNED = [\"pedagogy\",\"pedagogical\",\"pedagogically\",\"KC\",\"KCs\"]\n_TSG_REGEX = [\n    {\"pattern\": r\"\\bdata pill\\b|\\bdata-pill\\b\", \"message\": \"Use 'Datapill'\", \"ignore_case\": True},\n    {\"pattern\": r\"\\bdata tree\\b|\\bdata-tree\\b\", \"message\": \"Use 'Datatree'\", \"ignore_case\": True},\n    {\"pattern\": r\"\\bKnowledge Check(?!s)\\b\", \"message\": \"Use 'Knowledge Checks' (plural)\", \"ignore_case\": True},\n    {\"pattern\": r\"\\bfires?\\b(?!\\s+up)\", \"message\": \"Banned verb 'fire' -- use emit/runs/triggers/send\", \"ignore_case\": True},\n    {\"pattern\": r\"\\b(content spine|lab spine|course spine)\\b\", \"message\": \"Banned metaphor 'spine'\", \"ignore_case\": True},\n    {\"pattern\": r\"\\bWorkato is (hard|difficult|complex|complicated)\\b\", \"message\": \"Do not frame Workato as hard\", \"ignore_case\": True},\n]\n\ndef _tsg_rules(audience):\n    if audience == \"workato\":\n        return {\"applicable\": False, \"note\": \"team-style-guide: training/education only\", \"banned_phrases\": [], \"regex_patterns\": []}\n    return {\"applicable\": True, \"banned_phrases\": _TSG_BANNED, \"regex_patterns\": _TSG_REGEX}\n\n\n_RULES = {\n    \"say-it-plain\": _sip_rules, \"fact-check\": _fc_rules, \"stick-check\": _sc_rules,\n    \"calibrate-challenge\": _cc_rules, \"delight-check\": _dc_rules, \"team-style-guide\": _tsg_rules,\n}\n\n\ndef main(input):\n    artifact = input.get(\"artifact\", \"\")\n    audience = (input.get(\"audience\") or \"workato\").strip().lower()\n    raw = input.get(\"pillars_json\") or \"[]\"\n    try: requested = json.loads(raw)\n    except: requested = []\n    if not requested: requested = list(_RULES.keys())\n    results = {}\n    for pillar in requested:\n        if pillar in _RULES:\n            results[pillar] = _check(artifact, _RULES[pillar](audience))\n    return {\"results_json\": json.dumps(results)}\n",
+          "code_input": {
+            "schema": "[{\"name\": \"artifact\", \"type\": \"string\", \"label\": \"Artifact\", \"control_type\": \"text\", \"optional\": false}, {\"name\": \"pillars_json\", \"type\": \"string\", \"label\": \"Pillars JSON\", \"control_type\": \"text\", \"optional\": true}, {\"name\": \"audience\", \"type\": \"string\", \"label\": \"Audience\", \"control_type\": \"text\", \"optional\": true}]",
+            "data": {
+              "artifact": "#{_dp('{\"pill_type\":\"output\",\"provider\":\"workato_skill\",\"line\":\"start_workflow_run_\",\"path\":[\"parameters\",\"artifact\"]}')}",
+              "pillars_json": "#{_dp('{\"pill_type\":\"output\",\"provider\":\"workato_skill\",\"line\":\"start_workflow_run_\",\"path\":[\"parameters\",\"pillars_json\"]}')}",
+              "audience": "#{_dp('{\"pill_type\":\"output\",\"provider\":\"workato_skill\",\"line\":\"start_workflow_run_\",\"path\":[\"parameters\",\"audience\"]}')}"
+            }
+          },
+          "code_output_schema_json": "[{\"name\": \"results_json\", \"type\": \"string\", \"label\": \"Results JSON\", \"control_type\": \"text\"}]"
+        },
+        "extended_input_schema": [
+          {
+            "control_type": "form-schema-builder",
+            "label": "Input fields",
+            "type": "object",
+            "name": "code_input",
+            "optional": true,
+            "sticky": true,
+            "extends_schema": false,
+            "override": true,
+            "properties": [
+              {
+                "control_type": "text",
+                "label": "Schema",
+                "type": "string",
+                "name": "schema",
+                "extends_schema": true
+              },
+              {
+                "label": "Data",
+                "type": "object",
+                "name": "data",
+                "extends_schema": false,
+                "properties": [
+                  {
+                    "control_type": "text",
+                    "label": "Artifact",
+                    "type": "string",
+                    "name": "artifact",
+                    "extends_schema": false
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Pillars JSON",
+                    "type": "string",
+                    "name": "pillars_json",
+                    "extends_schema": false
+                  },
+                  {
+                    "control_type": "text",
+                    "label": "Audience",
+                    "type": "string",
+                    "name": "audience",
+                    "extends_schema": false
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "extended_output_schema": [
+          {
+            "label": "Output",
+            "type": "object",
+            "name": "output",
+            "extends_schema": false,
+            "properties": [
+              {
+                "control_type": "text",
+                "label": "Results JSON",
+                "type": "string",
+                "name": "results_json",
+                "extends_schema": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "as": "return_run__02",
+        "number": 2,
+        "keyword": "action",
+        "provider": "workato_skill",
+        "name": "workflow_return_result",
+        "skip": false,
+        "uuid": "run_static_checks-ret",
+        "input": {
+          "result": {
+            "results_json": "#{_dp('{\"pill_type\":\"output\",\"provider\":\"py_eval\",\"line\":\"py_run__01\",\"path\":[\"output\",\"results_json\"]}')}"
+          }
+        },
+        "extended_input_schema": [
+          {
+            "label": "Response",
+            "type": "object",
+            "name": "result",
+            "extends_schema": false,
+            "properties": [
+              {
+                "control_type": "text",
+                "label": "Results JSON",
+                "type": "string",
+                "name": "results_json",
+                "extends_schema": false
+              }
+            ]
+          }
+        ],
+        "extended_output_schema": [
+          {
+            "label": "Response",
+            "type": "object",
+            "name": "result",
+            "extends_schema": false,
+            "properties": [
+              {
+                "control_type": "text",
+                "label": "Results JSON",
+                "type": "string",
+                "name": "results_json",
+                "extends_schema": false
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "config": [
+    {
+      "keyword": "application",
+      "provider": "workato_skill",
+      "account_id": null
+    },
+    {
+      "keyword": "application",
+      "provider": "py_eval",
+      "account_id": null
+    },
+    {
+      "keyword": "application",
+      "provider": "workato_skill",
+      "account_id": null
+    }
+  ]
+}

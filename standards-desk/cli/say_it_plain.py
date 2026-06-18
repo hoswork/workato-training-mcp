@@ -3,7 +3,7 @@ say-it-plain — snippet 1 (rules + rubric).
 Audience variants: training keeps "Workato magic" exempt; workato strips internal carve-outs.
 """
 
-RUBRIC = """\
+RUBRIC = ""
 ---
 name: say-it-plain
 description: Use when writing or editing prose for external/professional consumption — slide decks, findings docs, customer emails, blog posts, READMEs, internal memos that may travel. Two passes, in order — form-level hype shapes (stat grids, drama-framed labels, telegraphic fragments, feature-name constructions, manufactured urgency, misstated hierarchy, aphoristic contrast) and word-level hype (corporate jargon, filler, superlatives, urgency/pressure, second-person hype, AI-slop sincerity tells).

@@ -4,7 +4,7 @@ Applies to training and education audiences. Not applicable to workato general a
 Most checks are LLM reasoning — only mechanical patterns included here.
 """
 
-RUBRIC = """\
+RUBRIC = ""
 ---
 name: fact-check
 description: Use when shipping or reviewing Workato training content (labs, slide decks, course plans, abstracts, Knowledge Checks, demos) to verify technical claims against the current Workato product surface — feature availability, action/connector names, UI labels, limits, pricing, deprecations. Frame the pillar of Accuracy under The Standards Desk.

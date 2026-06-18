@@ -4,7 +4,7 @@ Applies to training and education audiences. Not applicable to workato general a
 Static checks are presence-only; adult-learning principles require LLM reasoning.
 """
 
-RUBRIC = """\
+RUBRIC = ""
 ---
 name: calibrate-challenge
 description: Use when designing or reviewing training content (labs, slide decks, exercises, knowledge checks, walkthroughs) to check that the cognitive load is calibrated for adult professional learners — productive struggle with appropriate scaffolding, no avoidable friction, transfer-ready by design. Frame the pillar of Learning Effectiveness under The Standards Desk; never call this 'pedagogy'.

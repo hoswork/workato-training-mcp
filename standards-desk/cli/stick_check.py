@@ -4,7 +4,7 @@ Universal — applies to all audiences.
 Static checks are minimal (presence only); SUCCESs evaluation is LLM reasoning.
 """
 
-RUBRIC = """\
+RUBRIC = ""
 ---
 name: stick-check
 description: Use when designing or reviewing training content, course materials, hooks, takeaways, scenarios, openings/closings — anything that needs to *land and stay landed* in the audience's memory. Applies the Heath brothers' SUCCESs framework (Simple, Unexpected, Concrete, Credible, Emotional, Stories). Frame the pillar of Stickiness under The Standards Desk.
@@ -238,11 +238,14 @@ PRESENCE_CHECKS = [
 
 
 def _rules(audience):
+    # Verifier presence check only applies to lab/course content (training/education)
+    # General Workato content doesn't require observable success conditions
+    presence = PRESENCE_CHECKS if audience in ("training", "education") else []
     return {
         "applicable": True,
         "banned_phrases": [],
         "regex_patterns": [],
-        "presence_checks": PRESENCE_CHECKS,
+        "presence_checks": presence,
     }
 
 

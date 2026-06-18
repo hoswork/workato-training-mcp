@@ -1,0 +1,179 @@
+{
+  "name": "list_pillars",
+  "version": 1,
+  "private": false,
+  "concurrency": 1,
+  "code": {
+    "as": "start_workflow_list",
+    "number": 0,
+    "keyword": "trigger",
+    "provider": "workato_skill",
+    "name": "start_workflow",
+    "skip": false,
+    "uuid": "list_pillars-trig",
+    "input": {
+      "requires_user_confirmation": "false",
+      "description": "Lists available pillars for the audience. Returns pillars_json.",
+      "parameters_schema_json": "[{\"name\": \"audience\", \"type\": \"string\", \"label\": \"Audience\", \"control_type\": \"text\", \"optional\": true}]",
+      "result_schema_json": "[{\"name\": \"pillars_json\", \"type\": \"string\", \"label\": \"Pillars JSON\", \"control_type\": \"text\"}]"
+    },
+    "extended_input_schema": [],
+    "extended_output_schema": [
+      {
+        "label": "Parameters",
+        "type": "object",
+        "name": "parameters",
+        "extends_schema": false,
+        "properties": [
+          {
+            "control_type": "text",
+            "label": "Audience",
+            "type": "string",
+            "name": "audience",
+            "extends_schema": false
+          }
+        ]
+      }
+    ],
+    "block": [
+      {
+        "as": "py_list_01",
+        "number": 1,
+        "keyword": "action",
+        "provider": "py_eval",
+        "name": "invoke_custom_py_code",
+        "skip": false,
+        "uuid": "list_pillars-py",
+        "input": {
+          "name": "list_pillars",
+          "code": "import json\n\nPILLARS = [\n  {\"name\":\"say-it-plain\",\"description\":\"Catches jargon, hype, and marketing-speak\",\"checks_for\":\"Banned phrases, superlatives, urgency pressure, sincerity tells, agentic overreach, exclamation count\",\"audiences\":[\"training\",\"education\",\"workato\"],\"has_variant\":True},\n  {\"name\":\"fact-check\",\"description\":\"Verifies product claims, GA dates, and PM attribution\",\"checks_for\":\"Feature GA dates, required spellings, FDE cookbook alignment\",\"audiences\":[\"training\",\"education\"],\"has_variant\":True},\n  {\"name\":\"stick-check\",\"description\":\"Evaluates memorability \u2014 whether content will be remembered and applied\",\"checks_for\":\"Verifier presence, Working Backwards press release, SUCCESs framework\",\"audiences\":[\"training\",\"education\",\"workato\"],\"has_variant\":False},\n  {\"name\":\"calibrate-challenge\",\"description\":\"Checks difficulty calibration and prerequisite assumptions\",\"checks_for\":\"Time estimate presence, verifier sentence, scaffolding\",\"audiences\":[\"training\",\"education\"],\"has_variant\":True},\n  {\"name\":\"delight-check\",\"description\":\"Evaluates engagement, game beats, and delight principles\",\"checks_for\":\"LLM reasoning only \u2014 all 7 delight principles require judgment\",\"audiences\":[\"training\",\"education\",\"workato\"],\"has_variant\":False},\n  {\"name\":\"team-style-guide\",\"description\":\"Enforces Workato training team style conventions\",\"checks_for\":\"Banned terms, required spellings, banned verbs, banned metaphors, complexity framing\",\"audiences\":[\"training\",\"education\"],\"has_variant\":True}\n]\n\ndef main(input):\n    audience = (input.get(\"audience\") or \"workato\").strip().lower()\n    result = [p for p in PILLARS if audience in p[\"audiences\"]]\n    return {\"pillars_json\": json.dumps(result)}\n",
+          "code_input": {
+            "schema": "[{\"name\": \"audience\", \"type\": \"string\", \"label\": \"Audience\", \"control_type\": \"text\", \"optional\": true}]",
+            "data": {
+              "audience": "#{_dp('{\"pill_type\":\"output\",\"provider\":\"workato_skill\",\"line\":\"start_workflow_list\",\"path\":[\"parameters\",\"audience\"]}')}"
+            }
+          },
+          "code_output_schema_json": "[{\"name\": \"pillars_json\", \"type\": \"string\", \"label\": \"Pillars JSON\", \"control_type\": \"text\"}]"
+        },
+        "extended_input_schema": [
+          {
+            "control_type": "form-schema-builder",
+            "label": "Input fields",
+            "type": "object",
+            "name": "code_input",
+            "optional": true,
+            "sticky": true,
+            "extends_schema": false,
+            "override": true,
+            "properties": [
+              {
+                "control_type": "text",
+                "label": "Schema",
+                "type": "string",
+                "name": "schema",
+                "extends_schema": true
+              },
+              {
+                "label": "Data",
+                "type": "object",
+                "name": "data",
+                "extends_schema": false,
+                "properties": [
+                  {
+                    "control_type": "text",
+                    "label": "Audience",
+                    "type": "string",
+                    "name": "audience",
+                    "extends_schema": false
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "extended_output_schema": [
+          {
+            "label": "Output",
+            "type": "object",
+            "name": "output",
+            "extends_schema": false,
+            "properties": [
+              {
+                "control_type": "text",
+                "label": "Pillars JSON",
+                "type": "string",
+                "name": "pillars_json",
+                "extends_schema": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "as": "return_list_02",
+        "number": 2,
+        "keyword": "action",
+        "provider": "workato_skill",
+        "name": "workflow_return_result",
+        "skip": false,
+        "uuid": "list_pillars-ret",
+        "input": {
+          "result": {
+            "pillars_json": "#{_dp('{\"pill_type\":\"output\",\"provider\":\"py_eval\",\"line\":\"py_list_01\",\"path\":[\"output\",\"pillars_json\"]}')}"
+          }
+        },
+        "extended_input_schema": [
+          {
+            "label": "Response",
+            "type": "object",
+            "name": "result",
+            "extends_schema": false,
+            "properties": [
+              {
+                "control_type": "text",
+                "label": "Pillars JSON",
+                "type": "string",
+                "name": "pillars_json",
+                "extends_schema": false
+              }
+            ]
+          }
+        ],
+        "extended_output_schema": [
+          {
+            "label": "Response",
+            "type": "object",
+            "name": "result",
+            "extends_schema": false,
+            "properties": [
+              {
+                "control_type": "text",
+                "label": "Pillars JSON",
+                "type": "string",
+                "name": "pillars_json",
+                "extends_schema": false
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "config": [
+    {
+      "keyword": "application",
+      "provider": "workato_skill",
+      "account_id": null
+    },
+    {
+      "keyword": "application",
+      "provider": "py_eval",
+      "account_id": null
+    },
+    {
+      "keyword": "application",
+      "provider": "workato_skill",
+      "account_id": null
+    }
+  ]
+}

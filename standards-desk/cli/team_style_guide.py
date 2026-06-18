@@ -3,7 +3,7 @@ team-style-guide — snippet 1 (rules + rubric).
 Applies to training and education audiences only. Not applicable to workato general audience.
 """
 
-RUBRIC = """\
+RUBRIC = ""
 ---
 name: team-style-guide
 description: Use when authoring or reviewing Workato training content (lab guides, slide decks, course bundles, Knowledge Checks) for surface-level style — typography, color, casing, punctuation conventions, brand, required spellings, banned terms. Peer to say-it-plain under the Style pillar; say-it-plain handles prose, this handles everything else.
