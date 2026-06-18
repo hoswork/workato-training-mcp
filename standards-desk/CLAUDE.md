@@ -126,14 +126,9 @@ def main(input):
     return {"findings": findings, "pass": len(findings) == 0}
 ```
 
-## Workato project IDs
+## Workato environment
 
-| Resource | Value |
-|---|---|
-| Workspace | TBD (production workspace) |
-| Project | TBD |
-| MCP server | TBD |
-| MCP URL | TBD |
+Project, recipe IDs, and MCP server handle are environment-specific. They live in `workato/.workatoenv` — not here.
 
 ## Design decisions
 
