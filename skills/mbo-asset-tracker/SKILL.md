@@ -2,7 +2,7 @@
 name: mbo-asset-tracker
 description: Use when a teammate finishes or substantially advances a deliverable with Claude and wants it logged, or when they say "log this session", "log this asset", "track this", "I forgot to log", "show my logs", or "my MBO assets". Built from the Academy AI Tracking team rules.
 metadata:
-  version: "2.0"
+  version: "2.1"
 ---
 
 # MBO Asset Tracker
@@ -114,13 +114,33 @@ JSONL is the write-ahead buffer and the Slack staging queue. Write here first �
 
 ### 2. Sheet second (authoritative record)
 
-The Sheet is named `[name_slug]-mbo-log` inside the MBO Tracking Drive folder (ID `1I7jaNu7YSYn-MR1ZM0iDXIVkHNQ5RsII`). Append one row:
+The team's MBO sheets all live in the **MBO Tracking Drive folder** (ID `1I7jaNu7YSYn-MR1ZM0iDXIVkHNQ5RsII`). Each person's sheet is named `[name_slug]-mbo-log`.
 
+**Finding the sheet — in order:**
+
+1. Check config for `sheet_id` — if present, use it directly (fastest, skip steps 2-3)
+2. List the MBO Tracking Drive folder (`list_folder_items`, folder ID `1I7jaNu7YSYn-MR1ZM0iDXIVkHNQ5RsII`) and find `[name_slug]-mbo-log`
+3. If not found, create the sheet with header row, move it into the folder, then save its ID to config
+
+After finding or creating the sheet, save `sheet_id` to `mbo-tracker-config.json` so future calls skip straight to append.
+
+**Config schema (updated):**
+```json
+{
+  "name": "Heiwad Osman",
+  "name_slug": "heiwad-osman",
+  "reminder_cadence": "weekly",
+  "last_slack_post": "",
+  "sheet_id": "1Ygo7lLwiN_YECBMAz76YlMFBfJriQwFOZSf3FgqKzO0"
+}
+```
+
+Append one row:
 ```
 date | quarter | fiscal_year | title | category | stage | duration_minutes | notes
 ```
 
-If the sheet doesn't exist yet, create it with the header row first. The Sheet is the authoritative record — "show my logs" reads from here.
+The Sheet is the authoritative record — "show my logs" reads from here.
 
 If the Sheet write fails, report the error. The entry is safe in JSONL and can be retried.
 
