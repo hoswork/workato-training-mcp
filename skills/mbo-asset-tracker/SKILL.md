@@ -120,9 +120,11 @@ The team's MBO sheets all live in the **MBO Tracking Drive folder** (ID `1I7jaNu
 
 1. Check config for `sheet_id` — if present, use it directly (fastest, skip steps 2-3)
 2. List the MBO Tracking Drive folder (`list_folder_items`, folder ID `1I7jaNu7YSYn-MR1ZM0iDXIVkHNQ5RsII`) and find `[name_slug]-mbo-log`
-3. If not found, create the sheet with header row, move it into the folder, then save its ID to config
+3. If not found → **do not create a new sheet**. Ask the user:
+   > "I couldn't find your MBO sheet in the shared folder. Please paste the Google Sheet link and I'll save it for next time."
+   Extract the spreadsheet ID from the pasted URL, save it to config as `sheet_id`, then continue.
 
-After finding or creating the sheet, save `sheet_id` to `mbo-tracker-config.json` so future calls skip straight to append.
+After finding the sheet, save `sheet_id` to `mbo-tracker-config.json` so future calls skip straight to append.
 
 **Config schema (updated):**
 ```json
